@@ -1,0 +1,132 @@
+/*
+"StAuth10222: I Brad Alfano, 000731709 certify that this material is my original work. No other person's work has been used without due acknowledgement. I have not made my work available to anyone else."
+*/
+
+th, td{
+    text-align: center;
+	border: 0.25px solid #000000;
+    flex-wrap: wrap;
+}
+h1{
+	align-items: center;
+	justify-content: center;
+    display:flex;
+    font-family: 'Sono', sans-serif;
+
+}
+#app{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+    padding-bottom: 2px;
+	margin: auto;
+    width:400px;
+    background-color: rgb(183, 224, 222);
+    box-shadow: 0 10px 80px rgb(95, 42, 155);
+    border: 5px solid transparent;
+    border-image: linear-gradient(45deg, pink , green);
+    border-image-slice: 1;
+}
+#app, modal-body{
+    font-family: 'Dosis', sans-serif;
+    font-size:20px;
+}
+#error{
+    color:red;
+    font-size:24px;
+}
+body{
+    background-color: rgb(191, 230, 154);
+}
+
+.modal-container1 {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    display: table;
+    position: fixed;
+    background-color: rgba(0, 0, 0, .5);
+}
+
+.modal-container2 {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.modal-container3 {
+    width: 300px;
+    margin: 0px auto;
+    padding: 30px;
+    background-color: rgb(183, 224, 222);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 1);
+}
+
+
+.modal-body {
+    margin: 20px;
+}
+
+span{
+    margin: 10px;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 20
+}
+
+.bounce-enter-active {
+    animation: bounce-in 0.5s;
+  }
+  .bounce-leave-active {
+    animation: bounce-in 0.5s reverse;
+  }
+  @keyframes bounce-in {
+    0% {
+      transform: scale(0);
+    }
+    50% {
+      transform: scale(1.25);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .button-1 {
+    background-color: #EA4C89;
+    border-radius: 8px;
+    border-style: none;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 500;
+    list-style: none;
+    margin: 2px;
+    height:30px;
+    outline: none;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    transition: color 100ms;
+    vertical-align: baseline;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+  
+  .button-1:hover {
+    background-color: #F082AC;
+  }
+
+  .search-1{
+    margin:10px;
+  }
+  

@@ -1,0 +1,329 @@
+<!--
+"StAuth10222: I Brad Alfano, 000731709 certify that this material is my original work. No other person's work has been used without due acknowledgement. I have not made my work available to anyone else."
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>assignment 5</title>
+    <script src="https://unpkg.com/vue@3"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link href="https://fonts.googleapis.com/css2?family=Sono:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dosis&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <h1>Manage and Analyze student grades!</h1>
+    <div id="app">
+        <grade-table
+        :items="CourseGrades"
+        @display-create-grade="createGradeModal"
+        @display-edit-grade="editGradeModal"
+        ></grade-table>
+
+        <modal-box 
+        :display="displayModal" 
+        :type="type"
+        :id="key"
+        ></modal-box>
+    </div>
+
+<script>
+    class CourseGrade{
+        constructor(course, grade, id){
+            this.id = id;
+            this.course = course;
+            this.grade = grade;
+        }
+    }
+
+    const GradesApp = {
+
+        data() {
+            return{
+                CourseGrades: [new CourseGrade('math-101', 67, 0), new CourseGrade('history-101', 47, 1), new CourseGrade('english-101', 87, 2)],
+                id: 3,
+                type: '',
+                displayModal: false,
+                key: -1
+            }
+        },
+        methods:{
+            createGradeModal(){
+                this.displayModal = true;
+                this.type = 'create';
+            },
+            editGradeModal(id){
+                this.displayModal = true;
+                this.type = 'edit';
+                this.key = id;
+            },            
+            submitGrade(course, grade)
+            {
+                this.CourseGrades.push(new CourseGrade(course, Number(grade), this.id++));
+            },
+            editGrade(course, grade, id){
+                for(c of this.CourseGrades){
+                    if(c.id == id){
+                        c.course = course;
+                        c.grade = Number(grade);
+                        return;
+                    }
+                }
+            }
+        },
+    
+    };
+    const app = Vue.createApp(GradesApp);
+    
+    app.component("grade-table", {
+        data(){
+            return({
+                search:'',
+                filterHonorGrades: false,
+                filterFailGrades: false
+            });
+        },
+        props:['items'],
+        methods:{
+            sortNames(sort){
+                if(sort == 'up'){
+                    this.items.sort((a,b) => b.course.localeCompare(a.course));
+                }else{
+                    this.items.sort((a,b) => a.course.localeCompare(b.course));
+                }
+            },
+            sortGrades(sort){
+                if(sort == 'up'){
+                    this.items.sort((a,b) => b.grade -a.grade);
+                    this.gradeSort = false;
+                }else{
+                    this.items.sort((a,b) => a.grade -b.grade);
+                    this.gradeSort = true;
+                }
+            },
+            deleteGrade(id){
+                let i = 0;
+                for(c of this.items){
+                    if(c.id == id){
+                        break;
+                    }
+                    i++;
+                }
+                this.items.splice(i, 1);
+            }
+        },
+        computed: {
+            displayList(){
+                list = [];
+                for(i of this.items){
+                    if(i.course.startsWith(this.search)){
+                        list.push(i);
+                    }
+                }
+
+                if(this.filterHonorGrades){
+                    temp = [];
+                    for(i of list){
+                        if(i.grade >= 80){
+                            temp.push(i);
+                        }
+                    }
+                    list = temp;
+                }
+                if(this.filterFailGrades){
+                    temp = [];
+                    for(i of list){
+                        if(i.grade < 50){
+                            temp.push(i);
+                        }
+                    }
+                    list = temp;
+                }
+                return list;
+            },
+            avg(){
+                let i = 0;
+                let avg = 0;
+                for(item of this.displayList){
+                        i++;
+                        avg += item.grade;
+                }
+                if(avg == 0)
+                    return 0;
+                avg /= i;
+                return avg.toFixed(2);
+            },
+            max(){
+                let i = 0;
+                for(item of this.displayList){
+                    if(item.grade > i){
+                        i = item.grade
+                    }
+                }
+                return i;
+            },
+            min(){
+                let i = 101;
+                for(item of this.displayList){
+                    if(item.grade < i){
+                        i = item.grade
+                    }
+                }
+                if(i == 101)
+                    return 0;
+                return i;
+            },
+
+        },
+        template:
+        `
+        <div id ="table">
+            <button class="button-1" v-on:click="$emit('display-create-grade')">Create Grade</button>
+
+            <div class="search-1">
+            <label for="SearchCourse">Filter course by name:</label>
+            <input name="SearchCourse" v-model="search"/>
+            </div>
+
+
+            <button class="button-1" v-on:click="filterHonorGrades = !filterHonorGrades" :style="[ filterHonorGrades ? {backgroundColor:'#0b994b'} : {backgroundColor:''}]">Honor Grades</button>
+            <button class="button-1" v-on:click="filterFailGrades = !filterFailGrades" :style="[ filterFailGrades ? {backgroundColor:'#0b994b'} : {backgroundColor:''}]">Fail Grades</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course
+                        <button class="button-1 material-symbols-outlined" v-on:click="sortNames('down')">arrow_downward</button>
+                        <button class="button-1 material-symbols-outlined" v-on:click="sortNames('up')">arrow_upward</button>
+                        </th>
+                        
+                        <th>Grade
+                            <button class="button-1 material-symbols-outlined" v-on:click="sortGrades('down')">arrow_downward</button>
+                            <button class="button-1 material-symbols-outlined" v-on:click="sortGrades('up')">arrow_upward</button>
+                        </th>
+                            
+                        <th>Edit</th><th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <transition-group name="bounce">
+                    <tr v-for="item of displayList" :key="item.id">
+                        <td>{{item.course}}</td>
+                        <td>{{item.grade}}</td>
+                        <td>
+                            <button class="button-1 material-symbols-outlined" v-on:click="$emit('display-edit-grade', item.id)">edit</button>
+                        </td>
+                        <td>
+                            <button class="button-1 material-symbols-outlined" v-on:click="deleteGrade(item.id)">delete</button>
+                        </td>
+                    </tr>
+                    </transition-group>
+
+                </tbody>
+        </table>
+        <span>Min: {{min}}</span>
+        <span>Max: {{max}}</span>
+        <span>Avg: {{avg}}</span>
+        </div>
+        `
+    });
+
+    app.component("modal-box",{
+        data(){
+            return({
+                inputCourse:'',
+                inputGrade:'',
+                errorDisplay: false,
+                errorMessage: ''
+            });
+        },
+        props:['display', 'type', 'id'],
+        methods:{
+            submit(){
+                for(c of this.$parent.CourseGrades){
+                    if(c.course == this.inputCourse){
+                        this.errorDisplay = true;
+                        this.errorMessage = "Error: Not a unique course name";
+                        return;
+                    }
+                }
+
+                if(this.inputCourse.length == 0){
+                    this.errorDisplay = true;
+                    this.errorMessage = "Error: invalid course input";
+                    return;
+                }
+
+                if(this.inputGrade.length == 0 || isNaN(this.inputGrade) || this.inputGrade > 100 || this.inputGrade < 0){ 
+                    this.errorMessage = "Error: invalid grade input";
+                    this.errorDisplay = true;
+                    return;
+                }
+
+                this.$parent.submitGrade(this.inputCourse, this.inputGrade);
+                this.errorDisplay = false;
+                this.errorMessage = '';
+                this.inputCourse = '';
+                this.inputGrade = '';
+                this.close();
+            },
+            edit(){
+                if(this.inputCourse.length == 0){
+                    this.errorDisplay = true;
+                    this.errorMessage = "Error: invalid course input";
+                    return;
+                }
+
+                if(this.inputGrade.length == 0 || isNaN(this.inputGrade) || this.inputGrade > 100 || this.inputGrade < 0){ 
+                    this.errorMessage = "Error: invalid grade input";
+                    this.errorDisplay = true;
+                    return;
+                }
+                this.$parent.editGrade(this.inputCourse, this.inputGrade, this.id);
+                this.errorDisplay = false;
+                this.errorMessage = '';
+                this.inputCourse = '';
+                this.inputGrade = '';
+                this.close();
+
+            },
+            close(){
+                this.$parent.displayModal = false;
+                this.$parent.type ='';
+                this.inputCourse = '';
+                this.inputGrade = '';
+                this.errorDisplay = '';
+            }
+        },
+        template:
+        `
+        <div v-if="display" class="modal-container1">
+            <div class="modal-container2">
+            <div class="modal-container3">
+                <div class="modal-body">
+                    <h3 v-if="type == 'create'">Create a Grade</h3>
+                    <h3 v-if="type == 'edit'">Edit a Grade</h3>
+
+                    <span v-if="errorDisplay" id="error">{{errorMessage}}</span>
+                    <br>
+
+                    <label for="inputCourse">Course name:</label>
+                    <input v-model="inputCourse" name="inputCourse">
+                    <br><br>
+                    <label for="inputGrade">Grade number:</label>
+                    <input v-model="inputGrade" name="inputGrade">
+                    <br><br>
+                    <button class="button-1" v-on:click="close()">Cancel</button>
+                    <button class="button-1" v-on:click=" type == 'create' ? submit() : edit()">Submit</button>
+                </div>
+            </div>
+            </div>
+        </div>
+        `
+    });
+
+    app.mount('#app');
+</script>
+</body>
+</html>
